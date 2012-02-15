@@ -8,7 +8,7 @@ var HTTP_PORT = 3000;
 var DEPS_PORT = process.env.DEPS_PORT || 5033;
 
 var app = http.createServer(function(req, res) {
-    res.end('email is back, baby v' + VER);
+	res.end('email is back, baby v' + VER);
 });
 
 app.listen(HTTP_PORT);

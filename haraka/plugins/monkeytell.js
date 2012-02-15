@@ -2,6 +2,7 @@ var fs = require('fs');
 var outbound = require('./outbound');
 var async = require('async');
 var mime = require('../../lib/mime');
+var groups = require('../../lib/groups')();
 
 exports.hook_queue = function(next, connection) {
 	var plugin = this;
@@ -10,59 +11,63 @@ exports.hook_queue = function(next, connection) {
 		return next(DENY);
 	}
 	
-	var members = [
-		'elad.benisrael@gmail.com',
-		'nirsanirsa@gmail.com',
-		'syahalom@gmail.com',
-		'daniel.grumer@gmail.com'
-	];
-
 	var from = 'test@monkeytell.com';
 
 	var contents = '';
-	var to = null;
+	var metadata = {};
+
+	var fields = ['to','from'];
+	
 	connection.transaction.data_lines.forEach(function(line) {
 		plugin.loginfo('line:', line);
 
-		if (!to && line.indexOf('To:') === 0) {
-			to = line.substring(3);
-			to = mime.parseAddresses(to);
-		}
+		fields.forEach(function(field) {
+			if (field in metadata) return; // already found
+
+			if (line.toLowerCase().indexOf(field + ':') === 0) {
+				metadata[field] = mime.parseAddresses(line.substring(3));
+			}
+		});
 
 		contents += line;
 	});
 
-	plugin.loginfo('TO:', to);
+	plugin.loginfo('extracted metadata from mail:', metadata);
+	var addresses = metadata.to.map(function(x) { return x.address; });
 
-	return async.forEach(members, function(to, cb) {
+	plugin.loginfo('resolving groups for addresses:', addresses);
+	groups.resolveMany(addresses, function(err, members) {
+		plugin.loginfo('resolved members:', members);
 
-		plugin.loginfo('sending mail to: ' + to);
+		return async.forEach(members, function(to, cb) {
 
-		outbound.send_email(from, to, contents, function(code, msg) {
-			switch (code) {
-				case DENY:
-					plugin.logerror("sending mail failed: " + msg);
-					break;
+			plugin.loginfo('sending mail to: ' + to);
+			outbound.send_email(from, to, contents, function(code, msg) {
+				switch (code) {
+					case DENY:
+						plugin.logerror("sending mail failed: " + msg);
+						break;
 
-				case OK:
-					plugin.loginfo("mail sent");
-					break;
+					case OK:
+						plugin.loginfo("mail sent");
+						break;
 
-				default:
-					plugin.logerror("unrecognised return code from sending email: " + msg);
+					default:
+						plugin.logerror("unrecognised return code from sending email: " + msg);
+				}
+
+				return cb();
+			});
+
+		}, function(err) {
+			plugin.loginfo('mail sent to all members');
+
+			if (err) {
+				plugin.logerror('error sending mail', err);
+				return next(DENY);
 			}
-
-			return cb();
+			
+			return next(OK);
 		});
-
-	}, function(err) {
-		plugin.loginfo('mail sent to all members');
-
-		if (err) {
-			plugin.logerror('error sending mail', err);
-			return next(DENY);
-		}
-		
-		return next(OK);
 	});
 };
