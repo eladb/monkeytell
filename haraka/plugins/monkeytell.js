@@ -1,31 +1,51 @@
 var fs = require('fs');
 var outbound = require('./outbound');
+var async = require('async');
 
 exports.hook_queue = function(next, connection) {
+	var plugin = this;
 	var lines = connection.transaction.data_lines;
 	if (lines.length === 0) {
 		return next(DENY);
 	}
-		
-	var plugin = this;
+	
+	var members = [
+		'elad.benisrael.2@gmail.com',
+		'elad.benisrael@gmail.com',
+	];
 
-	var to = 'elad.benisrael@gmail.com';
-	var from = 'sender@example.com';
+	var from = 'test@monkeytell.com';
 
 	var contents = connection.transaction.data_lines.join('');
+	return async.forEach(members, function(to, cb) {
 
-	outbound.send_email(from, to, contents, function (code, msg) {
-		switch (code) {
-			case DENY:
-				plugin.logerror("Sending mail failed: " + msg);
-				return next(DENY);
-			case OK:
-				plugin.loginfo("mail sent");
-				return next(OK);
-			default:
-				plugin.logerror("Unrecognised return code from sending email: " + msg);
-				return next();
+		plugin.loginfo('sending mail to: ' + to);
+
+		outbound.send_email(from, to, contents, function(code, msg) {
+			switch (code) {
+				case DENY:
+					plugin.logerror("sending mail failed: " + msg);
+					break;
+
+				case OK:
+					plugin.loginfo("mail sent");
+					break;
+
+				default:
+					plugin.logerror("unrecognised return code from sending email: " + msg);
+			}
+
+			return cb();
+		});
+
+	}, function(err) {
+		plugin.loginfo('mail sent to all members');
+
+		if (err) {
+			plugin.logerror('error sending mail', err);
+			return next(DENY);
 		}
+		
+		return next(OK);
 	});
 };
-
