@@ -6,7 +6,7 @@ var HTTP_PORT = process.env.HTTP_PORT || 5080;
 var DEPS_PORT = process.env.DEPS_PORT || 5033;
 
 var app = http.createServer(function(req, res) {
-    res.end('email is back, baby v5');
+    res.end('email is back, baby v6');
 });
 
 app.listen(HTTP_PORT);
