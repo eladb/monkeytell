@@ -13,4 +13,5 @@ echo 'installing and reload upstart configuration'
 sudo initctl reload-configuration
 
 echo 'kill the process. this will cause a restart by 'upstart''
+sudo start monkeytell
 sudo kill `cat /var/run/monkeytell.pid`
