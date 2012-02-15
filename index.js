@@ -3,7 +3,7 @@ var HTTP_PORT = process.env.HTTP_PORT || 5080;
 var SMTP_PORT = process.env.SMTP_PORT || 5025;
 
 var app = http.createServer(function(req, res) {
-    res.end('email is back, baby v2');
+    res.end('email is back, baby v3');
 });
 
 
