@@ -1,6 +1,7 @@
 var fs = require('fs');
 var outbound = require('./outbound');
 var async = require('async');
+var mime = require('../../lib/mime');
 
 exports.hook_queue = function(next, connection) {
 	var plugin = this;
@@ -11,14 +12,28 @@ exports.hook_queue = function(next, connection) {
 	
 	var members = [
 		'elad.benisrael@gmail.com',
-		'nirsanirsa@gmail.com',
-		'syahalom@gmail.com',
-		'daniel.grumer@gmail.com'
+		// 'nirsanirsa@gmail.com',
+		// 'syahalom@gmail.com',
+		// 'daniel.grumer@gmail.com'
 	];
 
 	var from = 'test@monkeytell.com';
 
-	var contents = connection.transaction.data_lines.join('');
+	var contents = '';
+	var to = null;
+	connection.transaction.data_lines.forEach(function(line) {
+		plugin.loginfo('line:', line);
+
+		if (!to && line.indexOf('To:') === 0) {
+			to = line.substring(3);
+			to = mime.parseAddresses(to);
+		}
+
+		contents += line;
+	});
+
+	plugin.loginfo('TO:', to);
+
 	return async.forEach(members, function(to, cb) {
 
 		plugin.loginfo('sending mail to: ' + to);
