@@ -3,25 +3,26 @@ var express = require('express');
 var path = require('path');
 
 var HTTP_PORT = process.env.HTTP_PORT || 5080;
-var SMTP_PORT = process.env.SMTP_PORT || 5025;
 var DEPS_PORT = process.env.DEPS_PORT || 5033;
 
 var app = http.createServer(function(req, res) {
     res.end('email is back, baby v5');
 });
 
-
-var smtp = http.createServer(function(req, res) {
-    res.end('smtp');
-});
-
 app.listen(HTTP_PORT);
-smtp.listen(SMTP_PORT);
-
-console.log('Listening on', HTTP_PORT, 'and', SMTP_PORT);
+console.log('Listening on', HTTP_PORT);
 
 //
-// start deps server
+// start smtp server
+//
+
+var haraka = require('./lib/haraka');
+var smtp = haraka(path.join(__dirname, 'haraka'));
+smtp.start();
+
+
+//
+// start deps server (git pull + kill)
 //
 
 var spawn = require('./lib/spawn');
