@@ -1,4 +1,4 @@
-var VER = 10;
+var VER = 11;
 console.log('starting version', VER);
 var http = require('http');
 var express = require('express');
