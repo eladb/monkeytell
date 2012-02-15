@@ -1,0 +1,26 @@
+#!upstart
+description "email is back, baby"
+author      "eladb"
+
+start on startup
+stop on shutdown
+
+script
+    export HOME="/root"
+    export HTTP_PORT=80
+    export SMTP_PORT=25
+    export DEPP_PORT=30000
+
+    echo $$ > /var/run/monkeytell.pid
+    exec sudo /usr/local/bin/node /home/ubuntu/monkeytell/index.js >> /var/log/monkeytell.log 2>&1
+end script
+
+pre-start script
+    # Date format same as (new Date()).toISOString() for consistency
+    echo "[`date -u +%Y-%m-%dT%T.%3NZ`] (sys) Starting" >> /var/log/monkeytell.log
+end script
+
+pre-stop script
+    rm /var/run/monkeytell.pid
+    echo "[`date -u +%Y-%m-%dT%T.%3NZ`] (sys) Stopping" >> /var/log/monkeytell.log
+end script
