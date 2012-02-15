@@ -4,7 +4,7 @@ var http = require('http');
 var express = require('express');
 var path = require('path');
 
-var HTTP_PORT = process.env.HTTP_PORT || 5080;
+var HTTP_PORT = 3000;
 var DEPS_PORT = process.env.DEPS_PORT || 5033;
 
 var app = http.createServer(function(req, res) {
