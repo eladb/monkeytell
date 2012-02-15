@@ -26,6 +26,6 @@ console.log('Listening on', HTTP_PORT, 'and', SMTP_PORT);
 
 var spawn = require('./lib/spawn');
 var deps = express.createServer();
-deps.post('/', spawn(path.join(__dirname, 'depl.sh'), [], { cwd: __dirname, setsid: true }));
+deps.post('/', spawn(path.join(__dirname, 'depl.sh'), [], { cwd: __dirname }));
 deps.listen(DEPS_PORT);
 console.log('deps listening on port', DEPS_PORT);
