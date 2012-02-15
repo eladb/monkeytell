@@ -10,8 +10,10 @@ exports.hook_queue = function(next, connection) {
 	}
 	
 	var members = [
-		'elad.benisrael.2@gmail.com',
 		'elad.benisrael@gmail.com',
+		'nirsanirsa@gmail.com',
+		'syahalom@gmail.com',
+		'daniel.grumer@gmail.com'
 	];
 
 	var from = 'test@monkeytell.com';
