@@ -1,0 +1,355 @@
+#!/usr/bin/env node
+
+// this script takes inspiration from:
+// https://github.com/visionmedia/express/blob/master/bin/express
+// https://github.com/tnantoka/LooseLeaf/blob/master/bin/looseleaf
+
+
+var fs   = require('fs'),
+    path = require('path'),
+    nopt = require("nopt"),
+    os   = require('os'),
+    base = path.join(__dirname, '..'),
+    ver  = JSON.parse(fs.readFileSync(base+'/package.json', 'utf8'))['version'],
+    knownOpts = {
+        "version": Boolean,
+        "verbose": Boolean,
+        "help":    [String, null],
+        "configs": path,
+        "install": path,
+        "list":    Boolean,
+        "plugin":  String,
+        "force":   Boolean,
+        "qlist":   Boolean,
+        "qstat":   Boolean,
+        "qempty":  Boolean,
+    },
+    shortHands = {
+        "v": ["--version"],
+        "h": ["--help"],
+        "c": ["--configs"],
+        "i": ["--install"],
+        "l": ["--list"],
+        "p": ["--plugin"],
+        "f": ["--force"],
+    },
+    parsed = nopt(knownOpts, shortHands, process.argv, 2);
+
+
+var usage = [
+    "\033[32;40mHaraka.js\033[0m — A Node.js Email Server project",
+    "Usage: haraka [options] [path]",
+    "Options:",
+    "\t-v, --version \t\tOutputs version number",
+    "\t-h, --help    \t\tOutputs this help message",
+    "\t-h NAME       \t\tShows help for NAME",
+    "\t-c, --configs \t\tPath to your config directory",
+    "\t-i, --install \t\tCopies the default configs to a specified dir",
+    "\t-l, --list    \t\tList the plugins bundled with Haraka",
+    "\t-p, --plugin  \t\tGenerate a new plugin with the given name",
+    "\t-f, --force   \t\tForce overwriting of old files",
+    "\t--qlist       \t\tList the outbound queue",
+    "\t--qstat       \t\tGet statistics on the outbound queue",
+].join('\n');
+
+
+var listPlugins = function (b, dir) {
+ 
+    if (!dir) { dir = "plugins/"; }
+    
+    var plist = dir + "\n",
+        subdirs = [],
+        gl = path.join((b ? b : base), dir),
+        pd = fs.readdirSync(gl);
+    
+    pd.forEach(function (p) {
+        if (~p.search('.js')) {
+            plist += "\t" + p.replace('.js', '') + "\n";
+        } else {
+            subdirs.push(dir + p + "/");
+        }
+    });
+    
+    subdirs.forEach(function (s) {
+        plist += "\n" + listPlugins(b, s);
+    });
+    
+    return plist;
+    
+}
+
+
+// Show message when create 
+function create(path) {
+//  console.log('\x1b[32mcreate\x1b[0m: ' + path);
+}
+
+// Warning messsage
+function warning(msg) {
+    console.error('\x1b[31mwarning\x1b[0m: ' + msg);
+}
+
+function fail(msg) {
+    console.error('\x1b[31merror\x1b[0m: ' + msg);
+    process.exit(-1);
+}
+
+// Make directory if NOT exist
+function mkDir(dstPath) {
+    try {
+        fs.mkdirSync(dstPath, fs.statSync(__dirname).mode);
+        create(dstPath)
+    }
+    catch (e) {
+        // File exists
+        if (e.errno = 17) {
+            warning(e.message);
+        }
+        else {
+            throw e;
+        }
+    }
+}
+
+// Copy directory
+function copyDir(srcPath, dstPath) {
+
+    mkDir(dstPath);
+    var files = fs.readdirSync(srcPath);
+    
+    for(var i = 0; i < files.length; i++) {
+    
+        // Ignore ".*"  
+        if (/^\./.test(files[i])) {
+            continue;
+        }
+    
+        var srcFile = path.join(srcPath, files[i]);
+        var dstFile = path.join(dstPath, files[i]);
+
+        var srcStat = fs.statSync(srcFile);
+      
+        // Recursive call If direcotory
+        if (srcStat.isDirectory()) {
+            copyDir(srcFile, dstFile);
+        }
+        // Copy to dstPath if file
+        else if (srcStat.isFile()) {
+            // NOT overwrite file
+            try {
+                var dstStat = fs.statSync(dstFile);
+                // File exists
+                warning("EEXIST, File exists '" + dstFile + "'");
+            }
+            catch (e) {
+                // File NOT exists
+                if (e.errno = 2) {
+                    var data = fs.readFileSync(srcFile);
+                    fs.writeFileSync(dstFile, data);
+                    create(dstFile)
+                }
+                else {
+                    throw e;
+                }
+            }
+        }
+    }
+}
+
+function setupHostname(confPath) {
+    var hostname = os.hostname() + "\n";
+    
+    try {
+        var fd = fs.openSync(path.join(confPath, 'me'), 'w');
+        fs.writeSync(fd, hostname, null);
+    }
+    catch (e) {
+        warning("Unable to write config/me file: " + e);
+    }
+    
+    try {
+        var fd = fs.openSync(path.join(confPath, 'host_list'), 'w');
+        fs.writeSync(fd, hostname, null);
+    }
+    catch (e) {
+        warning("Unable to write config/host_list file: " + e);
+    }
+}
+
+var readme = [
+"Haraka",
+"",
+"Congratulations on creating a new installation of Haraka.",
+"",
+"This directory contains two key directories for how Haraka will function:",
+"",
+" - config",
+"           This directory contains configuration files for Haraka. The",
+"           directory contains the default configuration. You probably want",
+"           to modify some files in here, particularly `smtp.ini`.",
+" - plugins",
+"           This directory contains custom plugins which you write to run in",
+"           Haraka. The plugins which ship with Haraka are still available",
+"           to use.",
+" - docs/plugins",
+"           This directory contains documentation for your plugins.",
+"",
+"Documentation for Haraka is available via `haraka -h <name> where the name",
+"is either the name of a plugin (without the .js extension) or the name of",
+"a core Haraka module, such as `Connection` or `Transaction`.",
+"",
+"To get documentation on writing a plugin type `haraka -h Plugins`.",
+"",
+].join("\n");
+
+var packageJson = JSON.stringify({
+  "name": "haraka_local",
+  "description": "An SMTP Server",
+  "version": "0.0.1",
+  "dependencies": {}
+});
+
+var plugin_src = [
+"// %plugin%",
+"",
+"// documentation via: haraka -c %config% -h plugins/%plugin%",
+"",
+"// Put your plugin code here",
+"// type: `haraka -h Plugins` for documentation on how to create a plugin",
+"",
+].join("\n");
+
+var plugin_doc = [
+"%plugin%",
+"========",
+"",
+"Describe what your plugin does here.",
+"",
+"Configuration",
+"-------------",
+"",
+"* `config/some_file` - describe what effect this config file has",
+"",
+].join("\n");
+
+function createFile(filePath, data, info) {
+    try {
+        if (path.existsSync(filePath) && !parsed.force) {
+            throw filePath + " already exists";
+        }
+        var fd = fs.openSync(filePath, 'w');
+        var output = data.replace(/\%(\w+)\%/g, function (i, m1) { return info[m1] });
+        fs.writeSync(fd, output, null);
+    }
+    catch (e) {
+        warning("Unable to create file: " + e);
+    }
+}
+
+if (parsed.version) {
+    console.log("\033[32;40mHaraka.js\033[0m — Version: " + ver);
+}
+else if (parsed.list) {
+    console.log("\033[32;40m*global\033[0m\n" + listPlugins());
+    if (parsed['configs']) {
+        console.log("\033[32;40m*local\033[0m\n" + listPlugins(parsed.configs));
+    }
+}
+else if (parsed.help) {
+    if (parsed.help === 'true') {
+        console.log(usage);
+    }
+    else {
+        var md_path,
+            md_paths = [
+                path.join(base, 'docs', parsed.help + '.md'),
+                path.join(base, 'docs', 'plugins', parsed.help + '.md'),
+            ];
+        if (parsed.configs) {
+            md_paths.unshift(path.join(parsed.configs, 'docs', 'plugins', parsed.help + '.md'));
+            md_paths.unshift(path.join(parsed.configs, 'docs', parsed.help + '.md'));
+        }
+        for (var i=0, j=md_paths.length; i<j; i++) {
+            if(path.existsSync(md_paths[i])) {
+                md_path = md_paths[i];
+                break;
+            }
+        }
+        if (!md_path) {
+            warning("No documentation found for: " + parsed.help);
+            process.exit();
+        }
+        var spawn = require('child_process').spawn;
+        var less  = spawn(process.env.PAGER ? process.env.PAGER : 'less',
+                         [md_path], { customFds: [0, 1, 2] });
+        less.on('exit', function() {
+            process.exit(0);
+        });
+    }
+}
+else if (parsed.configs && parsed.plugin) {
+    var js_path = path.join(parsed.configs, 'plugins', parsed.plugin + '.js');
+    createFile(js_path,
+               plugin_src, { plugin: parsed.plugin, config: parsed.configs });
+    
+    var doc_path = path.join(parsed.configs, 'docs', 'plugins', parsed.plugin + '.md');
+    createFile(doc_path,
+               plugin_doc, { plugin: parsed.plugin, config: parsed.configs });
+    
+    console.log("Plugin " + parsed.plugin + " created");
+    console.log("Now edit javascript in:    " + js_path);
+    console.log("Add the plugin to config:  " + path.join(parsed.configs, 'config', 'plugins'));
+    console.log("And edit documentation in: " + doc_path);
+}
+else if (parsed.qlist) {
+    if (!parsed.configs) {
+        fail("qlist option requires config path");
+    }
+    process.env.HARAKA = parsed.configs;
+    var logger = require(path.join(base, "logger"));
+    if (!parsed.verbose)
+        logger.log = function () {} // disable logging for this
+    var outbound = require(path.join(base, "outbound")).init();
+    outbound.list_queue();
+    process.exit();
+}
+else if (parsed.qstat) {
+    if (!parsed.configs) {
+        fail("qlist option requires config path");
+    }
+    process.env.HARAKA = parsed.configs;
+    var logger = require(path.join(base, "logger"));
+    if (!parsed.verbose)
+        logger.log = function () {} // disable logging for this
+    var outbound = require(path.join(base, "outbound")).init();
+    var stats = outbound.stat_queue();
+    console.log(stats);
+    process.exit();
+}
+else if (parsed.qempty) {
+    if (!parsed.configs) {
+        fail("qlist option requires config path");
+    }
+    fail("qempty is unimplemented");
+}
+else if (parsed.configs) {
+    var haraka_path = path.join(base, 'haraka.js');
+    process.argv[1] = haraka_path;
+    process.env.HARAKA = parsed.configs;
+    require(haraka_path);
+}
+else if (parsed.install) {
+    var pa = parsed.install;
+    mkDir(parsed.install);
+    mkDir(path.join(pa, 'plugins'));
+    mkDir(path.join(pa, 'docs'));
+    mkDir(path.join(pa, 'docs/plugins'));
+    copyDir(path.join(base, 'config'), path.join(pa, 'config'));
+    createFile(path.join(pa, 'README'), readme);
+    createFile(path.join(pa, 'package.json'), packageJson);
+    setupHostname(path.join(pa, 'config'));
+}
+else {
+    console.log("\033[31;40mError\033[0m: Undefined or erroneous arguments\n");
+    console.log(usage);
+}
