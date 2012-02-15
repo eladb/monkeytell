@@ -1,0 +1,112 @@
+
+------------------------------------------------------------------------------------------------------------------------------
+OUR VERY FIRST EMAIL
+------------------------------------------------------------------------------------------------------------------------------
+[NOTICE] [C6ADBC4F-D1EA-4625-B578-26ECF8FF58C0] [core] got connection from: 213.199.154.140
+[DEBUG] [C6ADBC4F-D1EA-4625-B578-26ECF8FF58C0] [core] running lookup_rdns hooks
+[DEBUG] [C6ADBC4F-D1EA-4625-B578-26ECF8FF58C0] [core] running connect hooks
+[DEBUG] [C6ADBC4F-D1EA-4625-B578-26ECF8FF58C0] [core] running connect hook in dnsbl plugin
+[DEBUG] [C6ADBC4F-D1EA-4625-B578-26ECF8FF58C0] [dnsbl] check_ip: 213.199.154.140
+[DEBUG] [C6ADBC4F-D1EA-4625-B578-26ECF8FF58C0] [dnsbl] Querying: 140.154.199.213.zen.spamhaus.org
+[DEBUG] [C6ADBC4F-D1EA-4625-B578-26ECF8FF58C0] [core] running ehlo hooks
+[DEBUG] [C6ADBC4F-D1EA-4625-B578-26ECF8FF58C0] [core] running ehlo hook in helo.checks plugin
+[DEBUG] [C6ADBC4F-D1EA-4625-B578-26ECF8FF58C0] [core] running ehlo hook in helo.checks plugin
+[DEBUG] [C6ADBC4F-D1EA-4625-B578-26ECF8FF58C0] [core] running ehlo hook in helo.checks plugin
+[DEBUG] [C6ADBC4F-D1EA-4625-B578-26ECF8FF58C0] [core] running ehlo hook in helo.checks plugin
+[DEBUG] [C6ADBC4F-D1EA-4625-B578-26ECF8FF58C0] [core] running ehlo hook in helo.checks plugin
+[DEBUG] [C6ADBC4F-D1EA-4625-B578-26ECF8FF58C0] [core] running ehlo hook in helo.checks plugin
+[DEBUG] [C6ADBC4F-D1EA-4625-B578-26ECF8FF58C0] [core] running capabilities hooks
+[INFO] [C6ADBC4F-D1EA-4625-B578-26ECF8FF58C0.1] [core] MAIL FROM: <eladb@microsoft.com>
+[DEBUG] [C6ADBC4F-D1EA-4625-B578-26ECF8FF58C0.1] [core] running mail hooks
+[DEBUG] [C6ADBC4F-D1EA-4625-B578-26ECF8FF58C0.1] [core] running mail hook in mail_from.blocklist plugin
+[DEBUG] [C6ADBC4F-D1EA-4625-B578-26ECF8FF58C0.1] [core] running mail hook in mail_from.is_resolvable plugin
+[DEBUG] [C6ADBC4F-D1EA-4625-B578-26ECF8FF58C0.1] [mail_from.is_resolvable] microsoft.com: MX 10 mail.messaging.microsoft.com => 216.32.181.178,65.55.88.22
+[DEBUG] [C6ADBC4F-D1EA-4625-B578-26ECF8FF58C0.1] [mail_from.is_resolvable] microsoft.com: 216.32.181.178,65.55.88.22
+[INFO] [C6ADBC4F-D1EA-4625-B578-26ECF8FF58C0.1] [core] RCPT TO: <emailisbackbaby@monkeytell.com>
+[DEBUG] [C6ADBC4F-D1EA-4625-B578-26ECF8FF58C0.1] [core] running rcpt hooks
+[DEBUG] [C6ADBC4F-D1EA-4625-B578-26ECF8FF58C0.1] [core] running rcpt hook in rcpt_to.in_host_list plugin
+[INFO] [C6ADBC4F-D1EA-4625-B578-26ECF8FF58C0.1] [rcpt_to.in_host_list] Checking if <emailisbackbaby@monkeytell.com> host is in host_lists
+[DEBUG] [C6ADBC4F-D1EA-4625-B578-26ECF8FF58C0.1] [rcpt_to.in_host_list] checking monkeytell.com against monkeytell.com
+[DEBUG] [C6ADBC4F-D1EA-4625-B578-26ECF8FF58C0.1] [rcpt_to.in_host_list] Allowing monkeytell.com
+[DEBUG] [C6ADBC4F-D1EA-4625-B578-26ECF8FF58C0.1] [core] running rcpt_ok hooks
+[DEBUG] [C6ADBC4F-D1EA-4625-B578-26ECF8FF58C0.1] [core] running data hooks
+[DEBUG] [C6ADBC4F-D1EA-4625-B578-26ECF8FF58C0.1] [core] running data hook in data.signatures plugin
+[DEBUG] [C6ADBC4F-D1EA-4625-B578-26ECF8FF58C0.1] [core] running data_post hooks
+[DEBUG] [C6ADBC4F-D1EA-4625-B578-26ECF8FF58C0.1] [core] running data_post hook in data.signatures plugin
+[DEBUG] [C6ADBC4F-D1EA-4625-B578-26ECF8FF58C0.1] [core] running queue hooks
+[DEBUG] [C6ADBC4F-D1EA-4625-B578-26ECF8FF58C0.1] [core] running queue hook in monkeytell plugin
+[INFO] [-] [monkeytell] sending mail to: elad.benisrael@gmail.com
+[INFO] [-] [core] [outbound] Sending email via params
+[INFO] [-] [core] [outbound] Processing domain: gmail.com
+[INFO] [-] [monkeytell] sending mail to: nirsanirsa@gmail.com
+[INFO] [-] [core] [outbound] Sending email via params
+[INFO] [-] [core] [outbound] Processing domain: gmail.com
+[INFO] [-] [monkeytell] sending mail to: syahalom@gmail.com
+[INFO] [-] [core] [outbound] Sending email via params
+[INFO] [-] [core] [outbound] Processing domain: gmail.com
+[INFO] [-] [monkeytell] sending mail to: daniel.grumer@gmail.com
+[INFO] [-] [core] [outbound] Sending email via params
+[INFO] [-] [core] [outbound] Processing domain: gmail.com
+[INFO] [-] [monkeytell] mail sent
+[INFO] [-] [monkeytell] mail sent
+[INFO] [-] [monkeytell] mail sent
+[INFO] [-] [monkeytell] mail sent
+[INFO] [-] [monkeytell] mail sent to all members
+[DEBUG] [C6ADBC4F-D1EA-4625-B578-26ECF8FF58C0.1] [core] running queue_ok hooks
+[DEBUG] [-] [core] [outbound] running send_email hooks
+[DEBUG] [-] [core] [outbound] Sending mail: 1329324352904_0_1266_265.domU-12-31-39-02-75-7A
+[DEBUG] [-] [core] [outbound] running get_mx hooks
+[DEBUG] [-] [core] [outbound] running send_email hooks
+[DEBUG] [-] [core] [outbound] Sending mail: 1329324353095_0_1266_266.domU-12-31-39-02-75-7A
+[DEBUG] [-] [core] [outbound] running get_mx hooks
+[DEBUG] [-] [core] [outbound] running send_email hooks
+[DEBUG] [-] [core] [outbound] Sending mail: 1329324353261_0_1266_267.domU-12-31-39-02-75-7A
+[DEBUG] [-] [core] [outbound] running get_mx hooks
+[DEBUG] [-] [core] [outbound] running send_email hooks
+[DEBUG] [-] [core] [outbound] Sending mail: 1329324353428_0_1266_268.domU-12-31-39-02-75-7A
+[DEBUG] [-] [core] [outbound] running get_mx hooks
+[DEBUG] [-] [core] [outbound] Got an MX from DNS: gmail.com => 5 gmail-smtp-in.l.google.com
+[DEBUG] [-] [core] [outbound] Got an MX from DNS: gmail.com => 10 alt1.gmail-smtp-in.l.google.com
+[DEBUG] [-] [core] [outbound] Got an MX from DNS: gmail.com => 20 alt2.gmail-smtp-in.l.google.com
+[DEBUG] [-] [core] [outbound] Got an MX from DNS: gmail.com => 30 alt3.gmail-smtp-in.l.google.com
+[DEBUG] [-] [core] [outbound] Got an MX from DNS: gmail.com => 40 alt4.gmail-smtp-in.l.google.com
+[INFO] [-] [core] [outbound] Looking up A records for: gmail-smtp-in.l.google.com
+[DEBUG] [-] [core] [outbound] Got an MX from DNS: gmail.com => 40 alt4.gmail-smtp-in.l.google.com
+[DEBUG] [-] [core] [outbound] Got an MX from DNS: gmail.com => 5 gmail-smtp-in.l.google.com
+[DEBUG] [-] [core] [outbound] Got an MX from DNS: gmail.com => 10 alt1.gmail-smtp-in.l.google.com
+[DEBUG] [-] [core] [outbound] Got an MX from DNS: gmail.com => 20 alt2.gmail-smtp-in.l.google.com
+[DEBUG] [-] [core] [outbound] Got an MX from DNS: gmail.com => 30 alt3.gmail-smtp-in.l.google.com
+[INFO] [-] [core] [outbound] Looking up A records for: gmail-smtp-in.l.google.com
+[DEBUG] [-] [core] [outbound] Got an MX from DNS: gmail.com => 30 alt3.gmail-smtp-in.l.google.com
+[DEBUG] [-] [core] [outbound] Got an MX from DNS: gmail.com => 40 alt4.gmail-smtp-in.l.google.com
+[DEBUG] [-] [core] [outbound] Got an MX from DNS: gmail.com => 5 gmail-smtp-in.l.google.com
+[DEBUG] [-] [core] [outbound] Got an MX from DNS: gmail.com => 10 alt1.gmail-smtp-in.l.google.com
+[DEBUG] [-] [core] [outbound] Got an MX from DNS: gmail.com => 20 alt2.gmail-smtp-in.l.google.com
+[INFO] [-] [core] [outbound] Looking up A records for: gmail-smtp-in.l.google.com
+[DEBUG] [-] [core] [outbound] Got an MX from DNS: gmail.com => 20 alt2.gmail-smtp-in.l.google.com
+[DEBUG] [-] [core] [outbound] Got an MX from DNS: gmail.com => 30 alt3.gmail-smtp-in.l.google.com
+[DEBUG] [-] [core] [outbound] Got an MX from DNS: gmail.com => 40 alt4.gmail-smtp-in.l.google.com
+[DEBUG] [-] [core] [outbound] Got an MX from DNS: gmail.com => 5 gmail-smtp-in.l.google.com
+[DEBUG] [-] [core] [outbound] Got an MX from DNS: gmail.com => 10 alt1.gmail-smtp-in.l.google.com
+[INFO] [-] [core] [outbound] Looking up A records for: gmail-smtp-in.l.google.com
+[INFO] [-] [core] [outbound] Attempting to deliver to: 74.125.93.26 (4)
+[INFO] [-] [core] [outbound] Attempting to deliver to: 74.125.93.26 (4)
+[INFO] [-] [core] [outbound] Attempting to deliver to: 74.125.93.26 (4)
+[INFO] [-] [core] [outbound] Attempting to deliver to: 74.125.93.26 (4)
+[DEBUG] [C6ADBC4F-D1EA-4625-B578-26ECF8FF58C0.1] [core] running quit hooks
+[DEBUG] [C6ADBC4F-D1EA-4625-B578-26ECF8FF58C0.1] [core] running disconnect hooks
+[DEBUG] [C6ADBC4F-D1EA-4625-B578-26ECF8FF58C0.1] [core] closing client
+[INFO] [-] [core] [outbound] Successfully delivered mail: 1329324352904_0_1266_265.domU-12-31-39-02-75-7A
+[DEBUG] [-] [core] [outbound] running delivered hooks
+[INFO] [-] [core] [outbound] Successfully delivered mail: 1329324353095_0_1266_266.domU-12-31-39-02-75-7A
+[DEBUG] [-] [core] [outbound] running delivered hooks
+[ERROR] [-] [core] [outbound] Ongoing connection failed: Error: connect Unknown system errno 110
+[INFO] [-] [core] [outbound] Looking up A records for: alt1.gmail-smtp-in.l.google.com
+[ERROR] [-] [core] [outbound] Ongoing connection failed: Error: connect Unknown system errno 110
+[INFO] [-] [core] [outbound] Looking up A records for: alt1.gmail-smtp-in.l.google.com
+[INFO] [-] [core] [outbound] Attempting to deliver to: 173.194.67.27 (2)
+[INFO] [-] [core] [outbound] Attempting to deliver to: 173.194.67.27 (2)
+[INFO] [-] [core] [outbound] Successfully delivered mail: 1329324353428_0_1266_268.domU-12-31-39-02-75-7A
+[DEBUG] [-] [core] [outbound] running delivered hooks
+[INFO] [-] [core] [outbound] Successfully delivered mail: 1329324353261_0_1266_267.domU-12-31-39-02-75-7A
+[DEBUG] [-] [core] [outbound] running delivered hooks
