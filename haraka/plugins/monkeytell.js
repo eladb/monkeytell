@@ -19,7 +19,7 @@ exports.hook_queue = function(next, connection) {
 	var fields = ['to','from'];
 	
 	connection.transaction.data_lines.forEach(function(line) {
-		plugin.loginfo('line:', line);
+		plugin.logdebug('line:', line);
 
 		fields.forEach(function(field) {
 			if (field in metadata) return; // already found
@@ -32,12 +32,12 @@ exports.hook_queue = function(next, connection) {
 		contents += line;
 	});
 
-	plugin.loginfo('extracted metadata from mail:', metadata);
+	plugin.logdebug('extracted metadata from mail:', metadata);
 	var addresses = metadata.to.map(function(x) { return x.address; });
 
-	plugin.loginfo('resolving groups for addresses:', addresses);
+	plugin.logdebug('resolving groups for addresses:', addresses);
 	groups.resolveMany(addresses, function(err, members) {
-		plugin.loginfo('resolved members:', members);
+		plugin.logdebug('resolved members:', members);
 
 		return async.forEach(members, function(to, cb) {
 
@@ -49,7 +49,7 @@ exports.hook_queue = function(next, connection) {
 						break;
 
 					case OK:
-						plugin.loginfo("mail sent");
+						plugin.logdebug("mail sent");
 						break;
 
 					default:
