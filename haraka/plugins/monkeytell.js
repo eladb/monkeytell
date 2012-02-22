@@ -17,6 +17,10 @@ exports.hook_queue = function(next, connection) {
 
 		self.logdebug('Resolved targets:', members);
 
+		if (members.length === 0) {
+			return next(DENY);
+		}
+
 		connection.transaction.rcpt_to = [];
 		members.forEach(function(m) {
 			connection.transaction.rcpt_to.push(new Address(m));
