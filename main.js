@@ -1,18 +1,16 @@
 var VER = 12;
 console.log('starting version', VER);
-var http = require('http');
 var express = require('express');
+var http = require('http');
 var path = require('path');
+var api = require('./lib/api');
 
-var HTTP_PORT = 3000;
-var DEPS_PORT = process.env.DEPS_PORT || 5033;
+//
+// start api server
+//
 
-var app = http.createServer(function(req, res) {
-	res.end('email is back, baby v' + VER);
-});
-
-app.listen(HTTP_PORT);
-console.log('Listening on', HTTP_PORT);
+api.listen(3000);
+console.log('Listening on port 3000');
 
 //
 // start smtp server
@@ -21,14 +19,3 @@ console.log('Listening on', HTTP_PORT);
 var haraka = require('./lib/haraka');
 var smtp = haraka(path.join(__dirname, 'haraka'));
 smtp.start();
-
-
-//
-// start deps server (git pull + kill)
-//
-
-var spawn = require('./lib/spawn');
-var deps = express.createServer();
-deps.post('/', spawn(path.join(__dirname, 'depl.sh'), [], { cwd: __dirname }));
-deps.listen(DEPS_PORT);
-console.log('deps listening on port', DEPS_PORT);

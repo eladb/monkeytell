@@ -3,9 +3,30 @@ var outbound = require('./outbound');
 var async = require('async');
 var mime = require('../../lib/mime');
 var groups = require('../../lib/groups')();
+var Address = require('./address').Address;
 
 exports.hook_queue = function(next, connection) {
-	var plugin = this;
+	var self = this;
+
+	var addresses = connection.transaction.rcpt_to.map(function(a) { return a.address(); });
+
+	return groups.resolveMany(addresses, function(err, members) {
+		if (err) {
+			return next(DENY);
+		}
+
+		self.logdebug('Resolved targets:', members);
+
+		connection.transaction.rcpt_to = [];
+		members.forEach(function(m) {
+			connection.transaction.rcpt_to.push(new Address(m));
+		});
+
+		return outbound.send_email(connection.transaction, next);
+	});
+
+	return; //----
+
 	var lines = connection.transaction.data_lines;
 	if (lines.length === 0) {
 		return next(DENY);
