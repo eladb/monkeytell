@@ -21,10 +21,29 @@ exports.hook_queue = function(next, connection) {
 			return next(DENY);
 		}
 
+		//
+		// update 'rcpt_to' with the list of target addresses
+		//
+
 		connection.transaction.rcpt_to = [];
 		members.forEach(function(m) {
 			connection.transaction.rcpt_to.push(new Address(m));
 		});
+
+		//
+		// update 'to' header with the list of target addresses and group addresses
+		//
+
+		var toheader = addresses.join(',');
+		members.forEach(function(m) {
+			if (toheader) toheader += ',';
+			toheader += new Address(m).address();
+		});
+
+		connection.transaction.remove_header('To');
+		connection.transaction.add_header('To', toheader);
+
+		self.logdebug('New "TO" header:', toheader);
 
 		return outbound.send_email(connection.transaction, next);
 	});
