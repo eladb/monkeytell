@@ -19,3 +19,10 @@ console.log('Listening on port 3000');
 var haraka = require('./lib/haraka');
 var smtp = haraka(path.join(__dirname, 'haraka'));
 smtp.start();
+
+//
+// start monitor
+//
+
+var monitor = require('./lib/monitor');
+monitor.start();
