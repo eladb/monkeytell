@@ -10,6 +10,11 @@ exports.hook_queue = function(next, connection) {
 
 	var addresses = connection.transaction.rcpt_to.map(function(a) { return a.address(); });
 
+	var options = {
+		includeList: false, // include list address in the 'TO' field
+		expandList: true,   // expand addresses in the list(s) in the 'TO' field
+	};
+
 	return groups.resolveMany(addresses, function(err, members) {
 		if (err) {
 			return next(DENY);
@@ -34,11 +39,16 @@ exports.hook_queue = function(next, connection) {
 		// update 'to' header with the list of target addresses and group addresses
 		//
 
-		var toheader = addresses.join(',');
-		members.forEach(function(m) {
-			if (toheader) toheader += ',';
-			toheader += new Address(m).address();
-		});
+		var toheader = '';
+
+		if (options.includeList) toheader += addresses.join(',');
+
+		if (options.expandList) {
+			members.forEach(function(m) {
+				if (toheader) toheader += ',';
+				toheader += new Address(m).address();
+			});
+		}
 
 		connection.transaction.remove_header('To');
 		connection.transaction.add_header('To', toheader);
