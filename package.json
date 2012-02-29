@@ -5,6 +5,9 @@
     "express": "2.5.8",
     "Haraka": "1.1.0",
     "async": "0.1.16",
-    "mailer": "0.6.7"
+    "mailer": "0.6.7",
+    "dynamo": "0.2.2",
+    "commander": "0.5.2",
+    "logule": "0.6.1"
   }
 }

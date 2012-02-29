@@ -1,0 +1,88 @@
+#!/usr/bin/env node
+var fs = require('fs');
+var async = require('async');
+var dynamostore = require('../lib/dynamostore');
+var logger = require('logule');
+var program = require('commander');
+
+var store = dynamostore({ logger: logger });
+
+// get/get-all
+program
+  .command('get [address]')
+  .description('Retrieve list metadata. If `address` is not specified, all lists will be retrieved')
+  .action(function(address) {
+    if (!address) return store.all(print);
+    else return store.get(address, print);
+  });
+
+// create
+program
+  .command('create <address> <member1,member2,...>')
+  .description('Creates a list address@listzz.com with the specified members')
+  .action(function(address, members) {
+    members = members.split(',');
+    return store.create(address, { members: members }, print);
+  });
+
+// remove
+program
+  .command('remove <address>')
+  .description('Deletes a list')
+  .action(function(address) {
+    return store.remove(address, print);
+  });
+
+// remove-all
+program
+  .command('reset')
+  .description('Resets storage: deletes all lists (add --confirm)')
+  .option('--confirm', 'Required when resetting the storage')
+  .action(function(args) {
+    if (args.confirm !== undefined) {
+      logger.error('--confirm is required');
+      return;
+    }
+
+    return store.clear(print);
+  });
+
+// load
+program
+  .command('load <file>')
+  .description('Loads lists via a JSON file')
+  .option('--reset', 'Resets the storage before loading lists')
+  .action(function(file, args) {
+    return fs.readFile(file, function(err, data) {
+      var p = JSON.parse(data);
+      return async.forEachSeries(Object.keys(p), function(address, cb) {
+        var metadata = p[address];
+        return store.create(address, metadata, function(err) {
+          return cb(); // ignore errors
+        });
+      }, print);
+    });
+  });
+
+program
+  .usage('[command]')
+  .parse(process.argv);
+
+// -- private
+
+/** 
+ * used as callback, prints arguments
+ */
+function print(err) {
+  if (!err) {
+    var something = false;
+    for (var i = 1; i < arguments.length; ++i) {
+      console.info(arguments[i]);
+      something = true;
+    }
+
+    if (!something) {
+      console.info('done');
+    }
+  }
+}
