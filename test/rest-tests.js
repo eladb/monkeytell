@@ -2,8 +2,8 @@ var request = require('request');
 var async = require('async');
 
 var root = process.env.TESTED_URL || 'http://localhost:3000';
-//'http://listzz.com';
-//var root = 'http://localhost:3000';
+
+console.info('Running tests against:', root);
 
 function get(path, callback) {
   return request({ method: 'get', url: root + path, json: true }, callback);

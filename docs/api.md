@@ -1,5 +1,3 @@
-# listzz API
-
 ## GET /groups/:address ##
 
 Returns information about a group by address.
