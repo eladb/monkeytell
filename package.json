@@ -12,6 +12,6 @@
     "request": "2.9.152"
   },
   "scripts": {
-    "test": "nodeunit test/rest-tests.js"
+    "test": "(sudo ./run.sh &) && (sleep 5) && (nodeunit test/rest-tests.js) && (sudo killall node)"
   }
 }

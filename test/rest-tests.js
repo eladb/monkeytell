@@ -1,8 +1,9 @@
 var request = require('request');
 var async = require('async');
 
-//var root = 'http://listzz.com';
-var root = 'http://localhost:3000';
+var root = process.env.TESTED_URL || 'http://localhost:3000';
+//'http://listzz.com';
+//var root = 'http://localhost:3000';
 
 function get(path, callback) {
   return request({ method: 'get', url: root + path, json: true }, callback);
