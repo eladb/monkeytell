@@ -11,9 +11,18 @@ var store = dynamostore({ logger: logger });
 program
   .command('get [address]')
   .description('Retrieve list metadata. If `address` is not specified, all lists will be retrieved')
-  .action(function(address) {
-    if (!address) return store.all(print);
-    else return store.get(address, print);
+  .option('--only-address', 'Outputs only address(es) of lists and not metadata')
+  .action(function(address, args) {
+    if (!address) {
+      return store.all(printfmt(function(data) {
+        if (!args.onlyAddress) return JSON.stringify(data, true, 2);
+        else return data.map(function(x) { return x.address; }).join('\n');
+      }));
+    }
+    else return store.get(address, printfmt(function(data) {
+      if (!args.onlyAddress) return JSON.stringify(data, true, 2);
+      else return data.address;
+    }));
   });
 
 // create
@@ -22,7 +31,7 @@ program
   .description('Creates a list address@listzz.com with the specified members')
   .action(function(address, members) {
     members = members.split(',');
-    return store.create(address, { members: members }, print);
+    return store.create(address, { members: members }, print());
   });
 
 // remove
@@ -30,7 +39,17 @@ program
   .command('remove <address>')
   .description('Deletes a list')
   .action(function(address) {
-    return store.remove(address, print);
+    var addresses = [];
+    process.argv.forEach(function(a) { addresses.push(a); });
+    addresses.shift();
+    addresses.shift();
+    addresses.shift();
+    async.forEachSeries(addresses, function(address, cb) {
+      logger.info('removing:', address);
+      return store.remove(address, print(cb));
+    }, function() {
+      logger.info('done (all)');
+    });
   });
 
 // remove-all
@@ -44,7 +63,7 @@ program
       return;
     }
 
-    return store.clear(print);
+    return store.clear(print());
   });
 
 // load
@@ -60,7 +79,7 @@ program
         return store.create(address, metadata, function(err) {
           return cb(); // ignore errors
         });
-      }, print);
+      }, print());
     });
   });
 
@@ -70,19 +89,37 @@ program
 
 // -- private
 
+function printfmt(formatter, callback) {
+  return print( { formatter: formatter }, callback);
+}
+
 /** 
  * used as callback, prints arguments
  */
-function print(err) {
-  if (!err) {
-    var something = false;
-    for (var i = 1; i < arguments.length; ++i) {
-      console.info(arguments[i]);
-      something = true;
-    }
+function print(options, callback) {
+  if (typeof options === 'function') {
+    callback = options;
+    options = {};
+  }
 
-    if (!something) {
-      console.info('done');
+  options = options || {};
+  var formatter = options.formatter || function(data) { return JSON.stringify(data, true, 2); };
+
+  if (!callback) callback = function() {};
+
+  return function(err) {
+    if (!err) {
+      var something = false;
+      for (var i = 1; i < arguments.length; ++i) {
+        console.info(formatter(arguments[i]));
+        something = true;
+      }
+
+      if (!something) {
+        console.info('done');
+      }
+
+      return callback();
     }
   }
 }

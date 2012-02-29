@@ -8,6 +8,10 @@
     "mailer": "0.6.7",
     "dynamo": "0.2.2",
     "commander": "0.5.2",
-    "logule": "0.6.1"
+    "logule": "0.6.1",
+    "request": "2.9.152"
+  },
+  "scripts": {
+    "test": "nodeunit test/rest-tests.js"
   }
 }
