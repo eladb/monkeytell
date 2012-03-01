@@ -13,7 +13,7 @@ exports.hook_queue = function(next, connection) {
 	var options = {
 		includeList: false,   // include list address in the 'TO' field
 		expandList: true,     // expand addresses in the list(s) in the 'TO' field
-		prefixSubject: false, // add '[groupaddress]'' prefix to subject
+		prefixSubject: true, // add '[groupaddress]'' prefix to subject
 	};
 
 	return groups.resolveMany(addresses, function(err, result) {
@@ -66,6 +66,9 @@ exports.hook_queue = function(next, connection) {
 			if (subject.substring(0, 1) !== '[') {
 				subject = '[' + result.groups.join(', ') + '] ' + subject;
 			}
+
+			// remove trailing '\n'.
+			subject = subject.trim();
 
 			connection.transaction.remove_header('Subject');
 			connection.transaction.add_header('Subject', subject);
