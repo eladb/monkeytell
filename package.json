@@ -9,7 +9,8 @@
     "dynamo": "0.2.2",
     "commander": "0.5.2",
     "logule": "0.6.1",
-    "request": "2.9.152"
+    "request": "2.9.152",
+    "node-static": "0.5.9"
   },
   "scripts": {
     "test": "(node ./main.js &) && (sleep 5) && (nodeunit test/rest-tests.js) && (killall node)"
