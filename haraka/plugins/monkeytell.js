@@ -15,10 +15,12 @@ exports.hook_queue = function(next, connection) {
 		expandList: true,   // expand addresses in the list(s) in the 'TO' field
 	};
 
-	return groups.resolveMany(addresses, function(err, members) {
+	return groups.resolveMany(addresses, function(err, result) {
 		if (err) {
 			return next(DENY);
 		}
+
+		var members = result.members;
 
 		self.logdebug('Resolved targets:', members);
 
@@ -52,8 +54,20 @@ exports.hook_queue = function(next, connection) {
 
 		connection.transaction.remove_header('To');
 		connection.transaction.add_header('To', toheader);
-
 		self.logdebug('New "TO" header:', toheader);
+
+		//
+		// update 'subject' header (prefix with [group address])
+		//
+
+		var subject = connection.transaction.header.get('Subject');
+		if (subject.substring(0, 1) !== '[') {
+			subject = '[' + result.groups.join(', ') + '] ' + subject;
+		}
+
+		connection.transaction.remove_header('Subject');
+		connection.transaction.add_header('Subject', subject);
+		self.logdebug('New "SUBJECT" header: ', subject);
 
 		return outbound.send_email(connection.transaction, next);
 	});
