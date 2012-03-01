@@ -56,7 +56,7 @@
 
     console.log('Creating list', address, 'with metadata:', metadata);
     
-    $.post('http://localhost:3000/groups/' + address, metadata)
+    $.post('/groups/' + address, metadata)
       .success(function(data, textStatus, jqxhr) {
         console.log(data);
         console.log(textStatus);
