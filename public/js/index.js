@@ -1,8 +1,5 @@
 (function($) {
 
-  $('#success').hide();
-  $('#form').show();
-
   $('#create').click(function() {
 
     //
