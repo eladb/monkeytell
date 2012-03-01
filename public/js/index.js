@@ -60,6 +60,7 @@
         console.log(jqxhr.body);
         $('#form').hide();
         $('#success').show();
+        $('#success').removeClass('hidden');
         $('#new-list').text(address);
         $('#new-list').attr('href', 'mailto:' + address);
       })
