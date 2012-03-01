@@ -9,25 +9,24 @@ var store = dynamostore({ logger: logger });
 
 // get/get-all
 program
-  .command('get [address]')
-  .description('Retrieve list metadata. If `address` is not specified, all lists will be retrieved')
-  .option('--only-address', 'Outputs only address(es) of lists and not metadata')
-  .action(function(address, args) {
-    if (!address) {
-      return store.all(printfmt(function(data) {
-        if (!args.onlyAddress) return JSON.stringify(data, true, 2);
-        else return data.map(function(x) { return x.address; }).join('\n');
-      }));
-    }
-    else return store.get(address, printfmt(function(data) {
-      if (!args.onlyAddress) return JSON.stringify(data, true, 2);
-      else return data.address;
+  .command('ls')
+  .description('Enumerate all lists')
+  .action(function() {
+    return store.all(printfmt(function(data) {
+      return data.map(function(x) { return x.address; }).join('\n');
     }));
+  });
+
+program
+  .command('cat [address]')
+  .description('Retrieve list metadata.')
+  .action(function(address, args) {
+    return store.get(address, print());
   });
 
 // create
 program
-  .command('create <address> <member1,member2,...>')
+  .command('mk <address> <member1,member2,...>')
   .description('Creates a list address@listzz.com with the specified members')
   .action(function(address, members) {
     members = members.split(',');
@@ -36,7 +35,7 @@ program
 
 // remove
 program
-  .command('remove <address>')
+  .command('rm <address>')
   .description('Deletes a list')
   .action(function(address) {
     var addresses = [];
