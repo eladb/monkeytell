@@ -11,8 +11,9 @@ exports.hook_queue = function(next, connection) {
 	var addresses = connection.transaction.rcpt_to.map(function(a) { return a.address(); });
 
 	var options = {
-		includeList: false, // include list address in the 'TO' field
-		expandList: true,   // expand addresses in the list(s) in the 'TO' field
+		includeList: false,   // include list address in the 'TO' field
+		expandList: true,     // expand addresses in the list(s) in the 'TO' field
+		prefixSubject: false, // add '[groupaddress]'' prefix to subject
 	};
 
 	return groups.resolveMany(addresses, function(err, result) {
@@ -60,14 +61,16 @@ exports.hook_queue = function(next, connection) {
 		// update 'subject' header (prefix with [group address])
 		//
 
-		var subject = connection.transaction.header.get('Subject');
-		if (subject.substring(0, 1) !== '[') {
-			subject = '[' + result.groups.join(', ') + '] ' + subject;
-		}
+		if (options.prefixSubject) {
+			var subject = connection.transaction.header.get('Subject');
+			if (subject.substring(0, 1) !== '[') {
+				subject = '[' + result.groups.join(', ') + '] ' + subject;
+			}
 
-		connection.transaction.remove_header('Subject');
-		connection.transaction.add_header('Subject', subject);
-		self.logdebug('New "SUBJECT" header: ', subject);
+			connection.transaction.remove_header('Subject');
+			connection.transaction.add_header('Subject', subject);
+			self.logdebug('New "SUBJECT" header: ', subject);
+		}
 
 		return outbound.send_email(connection.transaction, next);
 	});
