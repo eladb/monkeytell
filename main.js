@@ -26,3 +26,21 @@ smtp.start();
 
 var monitor = require('./lib/monitor');
 monitor.start();
+
+//
+// start deployment endpoint
+//
+
+var githubhook = require('githubhook');
+var girror = require('girror');
+
+var repo = 'https://github.com/eladb/monkeytell';
+
+githubhook(8123, { 'secret': repo }, function (err, payload) {
+  if (err) return console.error(err);
+
+  return girror(repo, '.', function(err) {
+    if (err) return console.error(err);
+    else return process.exit(1);
+  });
+});
