@@ -1,3 +1,3 @@
 #!/bin/bash
-ssh ubuntu@staging.listzz.com /var/deploy/sync
+ssh -i ~/monkeytell.pem ubuntu@listzz.com /var/deploy/sync
 source ./testprod.sh

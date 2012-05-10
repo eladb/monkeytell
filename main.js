@@ -39,7 +39,7 @@ var repo = 'https://github.com/eladb/monkeytell';
 githubhook(8123, { 'secret': repo }, function (err, payload) {
   if (err) return console.error(err);
 
-  return girror(repo, '.', function(err) {
+  return girror(repo, '/var/www', function(err) {
     if (err) return console.error(err);
     else return process.exit(1);
   });
