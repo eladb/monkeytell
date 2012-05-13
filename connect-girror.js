@@ -90,6 +90,7 @@ function mkdroid(module) {
   var port = 5400;
 
   var error_msg = null;
+  var restart_timeout = null;
 
   function start() {
     var env = { port: port };
@@ -97,14 +98,24 @@ function mkdroid(module) {
     
     child.on('error', function(err) {
       error_msg = err.toString();
+      clearTimeout(restart_timeout);
+      restart_timeout = null;
     });
 
     child.on('exit', function(code) {
       error_msg = 'app exited with code: ' + code;
+      clearTimeout(restart_timeout);
+      restart_timeout = null;
     });
 
     child.stdout.pipe(process.stdout);
     child.stderr.pipe(process.stderr);
+
+    child.stop = function() {
+      child.removeAllListeners('exit');
+      child.removeAllListeners('error');
+      child.kill();
+    };
 
     return child;
   }
@@ -112,8 +123,7 @@ function mkdroid(module) {
   var child = start();
 
   var proxy = http_proxy.createServer(port, 'localhost');
-  var restart_timeout = null;
-  fs.watch(appdir, { persistent: false }, function() {
+  fs.watch(module, { persistent: false }, function() {
 
     if (restart_timeout) {
       console.log('already restarting');
@@ -123,11 +133,10 @@ function mkdroid(module) {
     console.log('app changed, restarting in 5 seconds');
 
     restart_timeout = setTimeout(function() {
+      console.log('restarting app');
       restart_timeout = null;
       error_msg = null;
-      child.removeAllListeners('error');
-      child.removeAllListeners('exit');
-      child.kill();
+      child.stop();
       child = start();
     }, 5000);
   });
