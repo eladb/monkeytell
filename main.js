@@ -3,13 +3,22 @@ console.log('starting version', VER);
 var express = require('express');
 var http = require('http');
 var path = require('path');
-var api = require('./lib/api');
 
 //
-// start api server
+// start http server
 //
 
-api.listen(3000);
+var server = express.createServer();
+var girror = require('./connect-girror');
+
+var listzz = require('./lib/api');
+var pbt = girror('https://github.com/eladb/test1');
+
+server.use(express.vhost('listzz.com', listzz));
+server.use(express.vhost('pbt.listzz.com', pbt));
+// server.use(express.vhost('localhost', listzz));
+
+server.listen(3000);
 console.log('Listening on port 3000');
 
 //
