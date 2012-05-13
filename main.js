@@ -12,7 +12,7 @@ var server = express.createServer();
 var girror = require('./connect-girror');
 
 var listzz = require('./lib/api');
-var pbt = girror('https://github.com/eladb/test1');
+var pbt = girror('https://github.com/eladb/pbt');
 
 server.use(express.vhost('listzz.com', listzz));
 server.use(express.vhost('pbt.listzz.com', pbt));
