@@ -85,15 +85,18 @@ module.exports = function(url) {
   return app;
 };
 
+var next_port = 5400;
+
 function mkdroid(module) {
   var appdir = path.dirname(module);
-  var port = 5400;
+  var port = next_port++;
 
   var error_msg = null;
   var restart_timeout = null;
 
   function start() {
     var env = { port: port };
+    console.log('spawning %s on port %d', module, port);
     var child = spawn(process.execPath, [ module ], { cwd: appdir, env: env });
     
     child.on('error', function(err) {
