@@ -15,9 +15,15 @@ var listzz = require('./lib/api');
 var pbt = girror('https://github.com/eladb/pbt');
 var telobike = girror('https://github.com/eladb/telobike');
 
+function mwapp(mw) {
+  var app = express.createServer();
+  app.use(mw);
+  return app;
+}
+
 server.use(express.vhost('listzz.com', listzz));
-server.use(express.vhost('pbt.listzz.com', pbt));
-server.use(express.vhost('telobike.listzz.com', telobike));
+server.use(express.vhost('pbt.listzz.com', mwapp(pbt)));
+server.use(express.vhost('telobike.listzz.com', mwapp(telobike)));
 
 // server.use(express.vhost('localhost', listzz));
 
