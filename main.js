@@ -13,7 +13,7 @@ var girror = require('connect-girror');
 
 var listzz = require('./lib/api');
 var pbt = girror('https://github.com/eladb/pbt');
-var telobike = girror('https://github.com/eladb/telobike');
+var telobike = girror('https://github.com/eladb/telobike', { hook: '/_deploy_dskfjh484jk09k' });
 
 function mwapp(mw) {
   var app = express.createServer();
@@ -25,8 +25,6 @@ server.use(express.vhost('listzz.com', listzz));
 server.use(express.vhost('pbt.listzz.com', mwapp(pbt)));
 server.use(express.vhost('telobike.listzz.com', mwapp(telobike)));
 
-// server.use(express.vhost('localhost', listzz));
-
 server.listen(3000);
 console.log('Listening on port 3000');
 
@@ -34,9 +32,9 @@ console.log('Listening on port 3000');
 // start smtp server
 //
 
-var haraka = require('./lib/haraka');
-var smtp = haraka(path.join(__dirname, 'haraka'));
-smtp.start();
+// var haraka = require('./lib/haraka');
+// var smtp = haraka(path.join(__dirname, 'haraka'));
+// smtp.start();
 
 //
 // start monitor
