@@ -148,7 +148,7 @@ The argument `callback` is `function(err, port)` where `port` is the port number
 
 A short form for `spinner.start()` where `script` is used as the first argument to the node engine prescribed in `process.execPath` and also used as the name of the child.
 Monitor is also set to point to the script, so if it changes, the child will be 
-restarted.
+restarted (unless `monitor` is set to `null` in the global options).
 
 ### spinner.stop(name, callback) ###
 

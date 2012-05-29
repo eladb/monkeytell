@@ -40,7 +40,7 @@ exports.createSpinner = function (globalOptions) {
       if (options.args) options.args.unshift(options.script);
       else options.args = [options.script];
 
-      if (!options.monitor) {
+      if (!('monitor' in options) && !('monitor' in globalOptions)) {
         var fn = options.script;
 
         // if the script doesn't end with '.js', append it.
@@ -88,6 +88,9 @@ exports.createSpinner = function (globalOptions) {
 
     // fault timeout
     options.faultTimeout = options.faultTimeout || globalOptions.faultTimeout;
+
+    // watch
+    options.monitor = options.monitor || globalOptions.monitor;
 
     // make sure we have a name
     if (!options.name) throw new Error('options.name is required');
