@@ -9,7 +9,7 @@ var path = require('path');
 //
 
 var server = express.createServer();
-var girror = require('./connect-girror');
+var girror = require('connect-girror');
 
 var listzz = require('./lib/api');
 var pbt = girror('https://github.com/eladb/pbt');
