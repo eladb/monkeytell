@@ -8,56 +8,67 @@ Spawns child processes with dynamic port allocation and other goodies. Sort of l
    environment variable
  * Respawn processes that decided to go to bed
  * Stateless API for a pretty stateful module (uses [fsmjs](https://github.com/anodejs/node-fsmjs)).
-
-More to come...
-
  * Monitor a file/directory and restart the child if changed
  * If a child was not 'touched' for some time, automatically stop it
- * Keep a child process running for a while when spawning a new one due 
-   to an update (tandem mode).
 
 ```bash
 $ npm install spinner
 ```
 
+#### myapp.js ####
+
 ```js
-// basic.js
-var request = require('request');
+var http = require('http');
+
+console.log('[myapp] Started on port %s', process.env.port || 5000);
+
+http.createServer(function(req, res) {
+  console.log('[myapp] %s %s', req.method, req.url);
+  res.end('hello, world');
+}).listen(process.env.port || 5000);
+```
+
+This is a simple node.js HTTP server that binds to `process.env.port`.
+It emits some logs which will be piped into the server's stdio streams.
+
+#### server.js ####
+
+```js
+var http = require('http');
 var spinner = require('spinner').createSpinner();
 
-// spawn myapp.js allocating a port in process.env.PORT
-spinner.start('myapp', function(err, port) {
-  if (err) return console.error(err);
+spinner.start('./myapp.js', function(err, socket) {
 
-  // send a request to the app
-  request('http://localhost:' + port, function(err, res, body) {
-    console.log('response:', body);
+  var req = http.request({ socketPath: socket });
 
-    // stop all child processes
-    spinner.stopall();
+  req.on('response', function(res) {
+    console.log('[server] HTTP %d %s', res.statusCode, http.STATUS_CODES[res.statusCode]);
+
+    res.on('data', function(data) {
+      console.log('[server] DATA <' + data.toString() + '>');
+    });
+
+    res.on('end', function() {
+      spinner.stop('./myapp.js');
+    });
   });
+
+  req.end();
 });
 ```
+
+The server creates a spinner and starts `./myapp.js`. The callback receives a `socket` parameter
+with the unix domain socket (or named pipe in Windows) path. Then, it uses node's `http` module to
+issue an HTTP request into this pipe.
 
 Output:
 
 ```bash
-$ node basic.js 
-[myapp] starting myapp
-[myapp] looking for an available port in the range: [ 7000, 7999 ]
-[myapp] found port 7000
-[myapp] spawn /usr/local/bin/node [ 'myapp' ]
-[myapp] waiting for port 7000 to be bound
-[myapp] checking status of port 7000 tries left: 10
-[myapp] status is closed
-[myapp] checking status of port 7000 tries left: 9
-[myapp] status is open
-[myapp] port 7000 opened successfuly
-[myapp] clearing wait timeout
-response: this is a sample app
-[myapp] stopping
-[myapp] exited with status 1
-[myapp] cleaning up
+$ node server.js
+[myapp] Started on port /tmp/ed929e3c521e4004bb93c59a65c968b2
+[myapp] GET /
+[server] HTTP 200 OK
+[server] DATA <hello, world>
 ```
 
 ## API ##
@@ -111,10 +122,10 @@ stopTimeout: 30,
 // (no monitor). file must exist when the child is first started.
 monitor: './lazykiller.js',
 
-// Stream to pipe process stdout to (default is null)
+// Stream to pipe process stdout to (default is process.stdout). Use `null` to disable.
 stdout: process.stdout,
 
-// Stream to pipe process stderr to (default is null)
+// Stream to pipe process stderr to (default is process.stderr). Use `null` to disable.
 stderr: process.stderr,
 
 // Idle time: if `spinner.start` is not called for this process within this time,
