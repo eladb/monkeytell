@@ -17,7 +17,7 @@ var telobike = girror('https://github.com/eladb/telobike');
 
 server.use(express.vhost('listzz.com', listzz));
 server.use(express.vhost('pbt.listzz.com', pbt));
-server.use(express.vhost('telobike2.citylifeapps.com', telobike));
+server.use(express.vhost('telobike.listzz.com', telobike));
 
 // server.use(express.vhost('localhost', listzz));
 
