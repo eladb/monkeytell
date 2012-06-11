@@ -25,7 +25,7 @@ function mwapp(mw) {
 server.use(express.vhost('listzz.com', listzz));
 server.use(express.vhost('pbt.listzz.com', mwapp(pbt)));
 server.use(express.vhost('telobike.listzz.com', mwapp(telobike)));
-server.use(express.vhost('pg.hackingonstuff.net', mwapp(playground)));
+server.use(express.vhost('play.hackingonstuff.net', mwapp(playground)));
 
 server.listen(3000);
 console.log('Listening on port 3000');
