@@ -25,6 +25,7 @@ function mwapp(mw) {
 server.use(express.vhost('listzz.com', listzz));
 server.use(express.vhost('pbt.listzz.com', mwapp(pbt)));
 server.use(express.vhost('telobike.listzz.com', mwapp(telobike)));
+server.use(express.vhost('telobike.citylifeapps.com', mwapp(telobike)));
 server.use(express.vhost('play.hackingonstuff.net', mwapp(playground)));
 
 server.listen(3000);
