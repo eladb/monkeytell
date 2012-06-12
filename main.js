@@ -12,9 +12,7 @@ var server = express.createServer();
 var girror = require('connect-girror');
 
 var listzz = require('./lib/api');
-var pbt = girror('https://github.com/eladb/pbt');
 var telobike = girror('https://github.com/eladb/telobike', { hook: '/_deploy_dskfjh484jk09k' });
-var playground = girror('https://github.com/eladb/playground', { hook: '/_deploy_jj48844444' });
 
 function mwapp(mw) {
   var app = express.createServer();
@@ -23,9 +21,7 @@ function mwapp(mw) {
 }
 
 server.use(express.vhost('listzz.com', listzz));
-server.use(express.vhost('pbt.listzz.com', mwapp(pbt)));
 server.use(express.vhost('telobike.citylifeapps.com', mwapp(telobike)));
-server.use(express.vhost('play.hackingonstuff.net', mwapp(playground)));
 
 server.listen(3000);
 console.log('Listening on port 3000');
