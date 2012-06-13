@@ -13,6 +13,7 @@ var girror = require('connect-girror');
 
 var listzz = require('./lib/api');
 var telobike = girror('https://github.com/eladb/telobike', { hook: '/_deploy_dskfjh484jk09k' });
+var cups = girror('https://eladb:gdemst1980@github.com/eladb/cups', { hook: '/_deploy_8i3jkjdjdd' });
 
 function mwapp(mw) {
   var app = express.createServer();
@@ -22,6 +23,7 @@ function mwapp(mw) {
 
 server.use(express.vhost('listzz.com', listzz));
 server.use(express.vhost('telobike.citylifeapps.com', mwapp(telobike)));
+server.use(express.vhost('cups.citylifeapps.com', mwapp(cups)));
 
 server.listen(3000);
 console.log('Listening on port 3000');
