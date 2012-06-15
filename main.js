@@ -21,6 +21,8 @@ function mwapp(mw) {
   return app;
 }
 
+// Change 
+
 server.use(express.vhost('listzz.com', listzz));
 server.use(express.vhost('telobike.citylifeapps.com', mwapp(telobike)));
 server.use(express.vhost('cups.citylifeapps.com', mwapp(cups)));
