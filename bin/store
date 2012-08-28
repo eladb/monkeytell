@@ -21,7 +21,9 @@ program
   .command('cat [address]')
   .description('Retrieve list metadata.')
   .action(function(address, args) {
-    return store.get(address, print());
+    return store.get(address, print({
+      formatter: function(result) { return result.members.join(','); }
+    }))
   });
 
 // create
